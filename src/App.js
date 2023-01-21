@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import Table from './Table'
 import Form from './Form'
 import Api from './Api'
-import SimpleComponent from './SimpleComponent'
+import Tick from './Tick'
+import RestTable from './RestTable'
 
 class App extends Component {
   state = {
@@ -30,8 +31,9 @@ class App extends Component {
       <Table characterData={characters} removeCharacter={this.removeCharacter} />
       <Form handleSubmit={this.handleSubmit} />
     </div>
-        <SimpleComponent />
+        <RestTable />
         <Api />
+        <Tick />
     </div>
     )
   }
