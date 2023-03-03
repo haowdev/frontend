@@ -3,13 +3,27 @@ import Table from './Table'
 import Form from './Form'
 import Api from './Api'
 import Tick from './Tick'
-import RestTable from './RestTable'
+
+import Employeelist from './Employeelist'
+import CreateDialog from './CreateDialog'
 
 class App extends Component {
-  state = {
-    characters: [],
+  constructor(props) {
+		super(props);
+		this.state = {employees: [], attributes: [], characters: []};
   }
- 
+  handleFetchData = async () => {
+    const url = 'http://localhost:8088/product/findAllsort'
+    const response = await fetch(url);
+    const data = await response.json();
+    this.setState({employees: data})
+    this.setState({attributes: Object.keys(data[0])})
+  }
+  componentDidMount() {
+    
+    this.handleFetchData();
+  }
+
   removeCharacter = (index) => {
     const { characters } = this.state
   
@@ -19,9 +33,32 @@ class App extends Component {
       }),
     })
   }
-  handleSubmit = (character) => {
+
+  handleSubmit = async(character) => {
     this.setState({ characters: [...this.state.characters, character] })
   }
+
+  onCreate = (newEmployee) =>{
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newEmployee)
+    };
+    fetch('http://localhost:8088/product/addfrombody', requestOptions).then(this.handleFetchData)
+    //this.handleFetchData()
+    // .then(response => response.json())
+	}
+
+
+  onDelete(employee) {
+  const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: employee.id
+    };
+    fetch('http://localhost:8088/product/delfrombody', requestOptions).then(this.handleFetchData)
+		};
+
   render() {
     const { characters } = this.state
     return (
@@ -31,9 +68,10 @@ class App extends Component {
       <Table characterData={characters} removeCharacter={this.removeCharacter} />
       <Form handleSubmit={this.handleSubmit} />
     </div>
-        <RestTable />
         <Api />
         <Tick />
+        <Employeelist employees={this.state.employees} onDelete={this.onDelete}/>
+        <CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
     </div>
     )
   }
